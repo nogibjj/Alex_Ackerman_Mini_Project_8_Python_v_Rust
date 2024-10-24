@@ -13,7 +13,7 @@ if __name__ == "__main__":
     critic_site = "tmeter"
 
     critic_avg_score = average(data_path, critic_site)
-    print(f"Average Critic Rating ({critic_site}) in 2016: {critic_avg_score:.2f}")
+    print(f"Critic ({critic_site}) Average Rating (2016): {critic_avg_score:.2f}")
 
     end_mem_usage, elapsed_time = calculate_time_memory(data_path)
 
