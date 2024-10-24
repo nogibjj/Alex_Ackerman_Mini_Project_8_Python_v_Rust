@@ -1,5 +1,5 @@
 {
-    "name": "Rust and AWS CLI",
+    "name": "Rust, Python, and AWS CLI",
     "build": {
         "dockerfile": "Dockerfile"
     },
@@ -7,9 +7,10 @@
         "vscode": {
             "extensions": [
                 "rust-lang.rust-analyzer", // Updated to use rust-analyzer
-                "ms-azuretools.vscode-docker" // Added Docker extension
+                "ms-azuretools.vscode-docker", // Docker extension
+                "ms-python.python" // Added Python extension
             ]
         }
     },
-    "postCreateCommand": "rustup update && rustup component add clippy && rustup component add rustfmt"
+    "postCreateCommand": "rustup update && rustup component add clippy && rustup component add rustfmt && pip install --upgrade pip"
 }
