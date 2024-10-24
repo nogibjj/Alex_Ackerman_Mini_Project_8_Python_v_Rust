@@ -6,10 +6,14 @@ import pandas as pd
 import time
 import resource
 
-def average(path):
+def average(path, critic_site = 'tmeter'):
+    '''
+    Calculates Average Critic Score From Movie Data
+    critic_site can be metascore, imdb, tmeter, audience, fandango
+    '''
     birth_data = pd.read_csv(path)
 
-    weight_avg = birth_data["weight"].mean()
+    weight_avg = birth_data[critic_site].mean()
     return weight_avg
 
 def calculate_time_memory(path):

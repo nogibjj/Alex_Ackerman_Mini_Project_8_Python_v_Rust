@@ -2,12 +2,12 @@
     Main Python File
 '''
 
-from library.average import average, calculate_time_memory
+from python_library.average import average, calculate_time_memory
 
-data_path = "births14.csv"
+data_path = "data/movie_rating_16_17.csv"
 
 if __name__ == "__main__":
-    data_path = "births14.csv"  # Updated with the actual CSV file path
+    data_path = "data/movie_rating_16_17.csv" 
 
     avg_weight = average(data_path)
     print(f"Average weight: {avg_weight:.5}")
