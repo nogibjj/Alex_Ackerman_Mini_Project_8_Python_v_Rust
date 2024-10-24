@@ -1,48 +1,35 @@
-name: CI
-
+name: Python-Rust
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      WORKING_DIR: sqlite #change this to the rust project name you are developing.
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        override: true
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11.5'
 
-    - name: Check
-      run: cargo check
-      working-directory: ${{ env.WORKING_DIR }}
+      - name: Install dependencies
+        run: make install
 
-    - name: Format
-      run: cargo fmt
-      working-directory: ${{ env.WORKING_DIR }}
+      - name: Make lint
+        run: make lint
+        
+      - name: format
+        run: make format
 
-    - name: Test
-      run: cargo test
-      working-directory: ${{ env.WORKING_DIR }}
+      - name: Run Main File
+        run: python main.py
 
-    - name: Release
-      run: cargo build --release
-      working-directory: ${{ env.WORKING_DIR }}
-
-    - name: Upload Binary Artifact
-      uses: actions/upload-artifact@v4 #v3 is scheduled for deprecation Nov 30 2024 check marketplace
-      with:
-        name: RuSQLite CLI Binary
-        path: ${{ env.WORKING_DIR }}/target/release/sqlite #change the /add to the name of your binary
+      - name: Run tests
+        run: make test
