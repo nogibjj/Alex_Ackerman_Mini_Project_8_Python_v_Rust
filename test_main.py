@@ -1,4 +1,4 @@
-from python_library.average import average, calculate_time_memory
+from library.average import average, calculate_time_memory
 
 data_path = "data/movie_ratings_16_17.csv"
 

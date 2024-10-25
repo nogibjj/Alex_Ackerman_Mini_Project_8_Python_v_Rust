@@ -7,12 +7,9 @@ test:
 
 format:	
 	black *.py
-	black python_library/*.py 
+	black library/*.py 
 
 lint:
-	pylint --disable=R,C --ignore-patterns=test_.*?py *.py python_library/*.py
+	pylint --disable=R,C --ignore-patterns=test_.*?py *.py library/*.py
 	
 all: install lint test format
-
-activate:
-	source /home/vscode/venv/bin/activate
