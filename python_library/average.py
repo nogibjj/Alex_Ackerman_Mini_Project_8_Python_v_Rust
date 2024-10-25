@@ -1,20 +1,22 @@
-'''
+"""
     Python Library
-'''
+"""
 
 import pandas as pd
 import time
 import resource
 
-def average(path, critic_site = 'tmeter'):
-    '''
+
+def average(path, critic_site="tmeter"):
+    """
     Calculates Average Critic Score From Movie Data
     critic_site can be metascore, imdb, tmeter, audience, fandango
-    '''
+    """
     movie_data = pd.read_csv(path)
 
     critic_avg_score = round(movie_data[critic_site].mean(), 2)
     return critic_avg_score
+
 
 def calculate_time_memory(path):
     # Record the start time

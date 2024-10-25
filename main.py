@@ -1,6 +1,6 @@
-'''
+"""
     Main Python File
-'''
+"""
 
 from python_library.average import average, calculate_time_memory
 
@@ -8,8 +8,8 @@ data_path = "data/movie_ratings_16_17.csv"
 
 if __name__ == "__main__":
     data_path = "data/movie_ratings_16_17.csv"
-    
-    # critic_site can be metascore, imdb, tmeter, audience, fandango 
+
+    # critic_site can be metascore, imdb, tmeter, audience, fandango
     critic_site = "tmeter"
 
     critic_avg_score = average(data_path, critic_site)
