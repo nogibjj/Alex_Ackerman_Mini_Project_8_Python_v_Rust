@@ -18,12 +18,12 @@ Per the source repository:
 `movie_ratings_16_17.csv` contains movie ratings data for 214 of the most popular movies (with a significant number of votes) released in 2016 and 2017. As of March 22, 2017, the ratings were up to date. Significant changes should be expected mostly for movies released in 2017.
 
 ## Task Performed
-They Python and Rust scripts were written to take in `movie_ratings_16_17.csv` and calculate the average rating for a given movie critic site. The possible critic sites were Metacritic (metascore), IMDB (imdb), Rotten Tomatoes (tmeter), Fandango (fandango), and the Audience Score (audience). The default critic site and values which this comparison was perform was set as Rotten Tomatoes. This input can be easily changed in Python by passing in a different column name and can be changed in Rust by changing the column number that is analyzed. 
+The Python and Rust scripts were written to take in `movie_ratings_16_17.csv` and calculate the average rating for a given movie critic site. The possible critic sites were Metacritic (metascore), IMDB (imdb), Rotten Tomatoes (tmeter), Fandango (fandango), and the Audience Score (audience). The default critic site and values which this comparison was perform was set as Rotten Tomatoes. This input can be easily changed in Python by passing in a different column name and can be changed in Rust by changing the column number that is analyzed. 
 
 ## Code Walkthrough
 #### Set up the environment to build the code in both Python and Rust.
 __`Rust`__
-  - Create `main.rs` and `lib.rs` files in the `src` directory for Rust to execute specific functions, __calculating the average weight, measuring data processing time, and monitoring memory usage__.
+  - Create `main.rs` and `lib.rs` files in the `src` directory for Rust to execute specific functions, __calculating the Critic Average Score, measuring data processing time, and monitoring memory usage__.
   - `main.rs`
     ```Rust
     use std::time::Instant;
@@ -186,7 +186,7 @@ __`Python`__
     ```
   - `test_main.py`
     ```Python
-   from library.average import average, calculate_time_memory
+    from library.average import average, calculate_time_memory
 
     data_path = "data/movie_ratings_16_17.csv"
 
@@ -222,6 +222,7 @@ __`Python`__
 |    Elapsed Time    | 0.0008070 seconds | 0.0014596 seconds |        Rust x 1.809 faster         |
 |    Memory Usage    |    0 kilobytes    |   0 kilobytes  |          The values are the same        |
 | Total Elapsed Time | 0.000807 seconds | 0.0014596 seconds |         Rust x 1.809 faster         |
-| Final Memory Usage | 2621440 kilobytes |  70536 kilobytes  |         Rust x 36.98 slower        |
+| Final Memory Usage | 2621440 kilobytes |  70536 kilobytes  |         Rust x 36.98 more memory        |
 
-* Based on the results, Rust generally executes functions faster than Python but used signigicantly more memory. This result is somewhat unexpected as Rust is supposed to be faster and use less memory. It is highly likely that given my limited knowledge of Rust my program runs suboptimally, however, it is possible that Python was better on memory given that pandas and numpy are built specifically for data processing and are highly optimized packages themselves. Every language has it's strengths and weaknesses and performance will vary depending the specific use case and implementation.
+
+Based on the results, Rust generally executes functions faster than Python but used signigicantly more memory. This result is somewhat unexpected as Rust is supposed to be faster and use less memory. It is highly likely that given my limited knowledge of Rust my program runs suboptimally, however, it is possible that Python was better on memory given that pandas and numpy are built specifically for data processing and are highly optimized packages themselves. Every language has it's strengths and weaknesses and performance will vary depending the specific use case and implementation.
