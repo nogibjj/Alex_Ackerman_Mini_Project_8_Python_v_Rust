@@ -10,7 +10,7 @@ format:
 	black library/*.py 
 
 lint:
-	pylint --disable=R,C --ignore-patterns=test_.*?py *.py library/*.py
+	pylint --disable=R,C --ignore-patterns=test_.*?py *.py python_library/*.py
 	
 all: install lint test format
 
