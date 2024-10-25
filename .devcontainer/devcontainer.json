@@ -1,40 +1,29 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/rust
 {
-    "name": "Rust",
-    // Corrected base image URL
-    "image": "mcr.microsoft.com/vscode/devcontainers/base:ubuntu",
-    
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "rust-lang.rust-analyzer",
-                "vadimcn.vscode-lldb",
-                "GitHub.copilot"
-            ]
-        }
-    },
+  "name": "Python & Rust Development",
+  "image": "mcr.microsoft.com/vscode/devcontainers/base:ubuntu",
 
-    // Features to add Rust automatically to the dev container
-    "features": {
-        "ghcr.io/devcontainers/features/rust:1": {}
-    },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",   // Python extension for VS Code
+        "rust-lang.rust-analyzer",
+        "vadimcn.vscode-lldb",
+        "GitHub.copilot"
+      ]
+    }
+  },
 
-    // Use 'mounts' to make the cargo cache persistent in a Docker Volume.
-    // "mounts": [
-    //  {
-    //      "source": "devcontainer-cargo-cache-${devcontainerId}",
-    //      "target": "/usr/local/cargo",
-    //      "type": "volume"
-    //  }
-    // ],
+  // Use the Rust feature to install Rust and Cargo automatically
+  "features": {
+    "ghcr.io/devcontainers/features/rust:1": {}
+  },
 
-    // Use 'forwardPorts' to make a list of ports inside the container available locally.
-    // "forwardPorts": [],
+  // Ensure Python 3.11 is installed along with Rust
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y python3.11 python3-pip && python3.11 -m pip install pandas && python3.11 --version && rustc --version && cargo --version",
 
-    // Use 'postCreateCommand' to run commands after the container is created.
-    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y python3 python3-pip && rustc --version && python3 --version",
-
-    // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-    // "remoteUser": "root"
+  "settings": {
+    "python.defaultInterpreterPath": "/usr/bin/python3.11"
+  }
 }
+
+  
