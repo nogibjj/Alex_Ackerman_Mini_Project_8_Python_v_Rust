@@ -1,121 +1,227 @@
-[![CI](https://github.com/johncoogan53/Rust_SQLite/actions/workflows/CI.yml/badge.svg)](https://github.com/johncoogan53/Rust_SQLite/actions/workflows/CI.yml)
+[![Python CI](https://github.com/nogibjj/Alex_Ackerman_Mini_Project_8_Python_v_Rust/actions/workflows/CI.yml/badge.svg)](https://github.com/nogibjj/Alex_Ackerman_Mini_Project_8_Python_v_Rust/actions/workflows/CI.yml)
 
-# Rust SQLite Demo Repository
+[![Rust CI](https://github.com/nogibjj/Alex_Ackerman_Mini_Project_8_Python_v_Rust/actions/workflows/rust_CI.yml/badge.svg)](https://github.com/nogibjj/Alex_Ackerman_Mini_Project_8_Python_v_Rust/actions/workflows/rust_CI.yml)
 
-## Setup
-Be sure to start with this template repository:
+# Alex_Ackerman_Mini_Project_8_Python_v_Rust
 
-https://github.com/johncoogan53/Rust-Template
+## Mini Project 8: Comparing Python and Rust for Data Processing 
 
-Once you have made a new repository and launched a codespace you will see these files:
-![alt text](readme_images/image.png)
+## Requirements
+* Take an existing Python script for data processing
+* Rewrite it in Rust
+* Highlight improvements in speed and resource usage
 
-I have made this template so that it comes with base CI/CD functionality. A quick note, the dockerfile is as bare bones as it can get to ensure that a rust developer environment is set up. Please add as you see fit to include any QOL options you want.
+## Dataset
+The dataset used for this project can be found at [this repository](https://github.com/mircealex/Movie_ratings_2016_17?tab=readme-ov-file).
 
-To be sure that this worked, you will want to check if cargo is installed with:
+Per the source repository:
+`movie_ratings_16_17.csv` contains movie ratings data for 214 of the most popular movies (with a significant number of votes) released in 2016 and 2017. As of March 22, 2017, the ratings were up to date. Significant changes should be expected mostly for movies released in 2017.
 
->cargo --version
+## Task Performed
+They Python and Rust scripts were written to take in `movie_ratings_16_17.csv` and calculate the average rating for a given movie critic site. The possible critic sites were Metacritic (metascore), IMDB (imdb), Rotten Tomatoes (tmeter), Fandango (fandango), and the Audience Score (audience). The default critic site and values which this comparison was perform was set as Rotten Tomatoes. This input can be easily changed in Python by passing in a different column name and can be changed in Rust by changing the column number that is analyzed. 
 
-If you don't see a version number then you should troubleshoot by running:
+## Code Walkthrough
+#### Set up the environment to build the code in both Python and Rust.
+__`Rust`__
+  - Create `main.rs` and `lib.rs` files in the `src` directory for Rust to execute specific functions, __calculating the average weight, measuring data processing time, and monitoring memory usage__.
+  - `main.rs`
+    ```Rust
+    use std::time::Instant;
+    use psutil::process::Process;
+    use csv::ReaderBuilder;
+    use std::error::Error;
+    use std::fs::File;
 
->curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    fn calculate_time_memory(path: &str) -> (i64, f64) {
+        // Record the start time
+        let start_time = Instant::now();
 
-and following the instructions.
+        // Measure the initial resource usage
+        let process = Process::new(std::process::id());
+        let start_mem_usage = process.as_ref().expect("Failed to create process").memory_info().expect("Failed to get memory info").rss();
 
-You will see an add project directory, this is a placeholder. You will make your own project by using 
+        // Calculate the average
+        let _average_result = average(path);
 
->cargo new \<project name>
+        // Record the end time
+        let end_time = Instant::now();
 
-Lets start by typing:
+        // Measure the final resource usage
+        let end_mem_usage = process.as_ref().expect("Failed to create process").memory_info().expect("Failed to get memory info").rss();
 
->cargo new sqlite
+        // Calculate the elapsed time
+        let elapsed_time = end_time.duration_since(start_time).as_secs_f64();
 
-This will give you a new project directory:
+        println!("Rust-Elapsed Time: {:.7} seconds", elapsed_time);
+        println!("Rust-Memory Usage Change: {} kilobytes", end_mem_usage - start_mem_usage);
 
-![alt text](<readme_images/image copy.png>)
+        (end_mem_usage as i64, elapsed_time)
+    }
 
-Rust automatically generates the project structure which is really nice. We will need to add a lib.rs to hold our logic where our main will handle CLI parsing. 
+    fn average(path: &str) -> Result<f64, Box<dyn Error>> {
+        let file = File::open(path)?;
+        let mut rdr = ReaderBuilder::new().delimiter(b',').from_reader(file);
 
-You may not see a target folder or a Cargo.lock file right away and that's fine. The Cargo.toml file is where you can specify dependencies like a requirements.txt file only better. You can include dependencies by adding them with cargo (no need to worry about pinning versions, cargo takes care of it):
+        let mut sum = 0.0;
+        let mut count = 0;
 
->cargo add \<dependency name>
+        for result in rdr.records() {
+            let record = result?;
+            if let Some(weight) = record.get(5) {
+                if let Ok(parsed_weight) = weight.parse::<f64>() {
+                    sum += parsed_weight;
+                    count += 1;
+                }
+            }
+        }
 
-lets start with the dependencies we know we will need, rusqlite for db operations and clap for command line tooling:
+        if count == 0 {
+            return Err("No data found".into());
+        }
 
->cargo add clap --features derive
+        Ok(sum / count as f64)
+    }
 
-we include derive as a feature so we can access traits included in the library (don't worry too much about this now)
+    fn main() {
+        let path = "/workspaces/Alex_Ackerman_Mini_Project_8_Python_v_Rust/data/movie_ratings_16_17.csv"; // Updated with the actual CSV file path
 
->cargo add rusqlite
+        match average(path) {
+            Ok(avg) => println!("Critic Average Score 2016: {:.4}", avg),
+            Err(err) => eprintln!("Error: {}", err),
+        }
 
->cargo add csv 
+        let (end_mem_usage, elapsed_time) = calculate_time_memory(path);
 
-for csv ingestion
+        println!("Final Memory Usage: {} kilobytes", end_mem_usage);
+        println!("Total Elapsed Time: {:.7} seconds", elapsed_time);
+    }
 
-And our Cargo.toml file now has our dependencies:
-![alt text](<readme_images/image copy 7.png>)
+    ```
+  - Create a `Cargo.toml` file to execute the Rust files and install dependencies.</br>
+  - `Cargo.toml` </br>
+    ```
+    [package]
+    name = "rust_processing"
+    version = "0.1.0"
+    edition = "2021"
 
-## Side note about builds
+    [dependencies]
+    csv = "1.3.0"
+    psutil = "3.3.0"
+    rand = "0.8.5"
+    serde = "1.0.213"
+    serde_derive = "1.0.213"
+    sysinfo = "0.32.0"
+    time = "0.3.36"
 
-Rust is a compiled language and so to run programs you will need to compile the file first. This is done a few ways:
+    ```
 
->cargo check
+__`Python`__
+  - Create `__init__.py` and `average.py` files in the `library` directory for Python to execute specific functions, calculating the critic average score, measuring processing time, and monitoring memory usage.
+  - `average.py`
+    ```Python
+    import pandas as pd
+    import time
+    import resource
 
-* a quick compile that works off of a cached version to only rebuild changes
 
->cargo build
+    def average(path, critic_site="tmeter"):
+        """
+        Calculates Average Critic Score From Movie Data
+        critic_site can be metascore, imdb, tmeter, audience, fandango
+        """
+        movie_data = pd.read_csv(path)
 
-* an unoptimized build which has debug functionality
+        critic_avg_score = round(movie_data[critic_site].mean(), 2)
+        return critic_avg_score
 
->cargo build --release
 
-* generates an optimized binary in your target/release/\<projectname> directory
+    def calculate_time_memory(path):
+        # Record the start time
+        start_time = time.time()
 
-![alt text](<readme_images/image copy 3.png>)
+        # Measure the initial resource usage
+        start_mem_usage = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 
-This binary location is also what gets uploaded as an artifact in the template's yml file. Be sure to update the working directory location and binary location name for this to work properly.
+        # Calculate the average
+        average(path)
 
-## Project Breakdown
+        # Record the end time
+        end_time = time.time()
 
-Our main.rs file will handle our CLI features by parsing input as one of three options: Create, Query, Delete since Query can handle reads and updates. Feel free to add more. 
+        # Calculate the elapsed time
+        elapsed_time = end_time - start_time
 
-See main.rs for a commented example of how we make our CLI. Note that by using clap over standard library options (std::env for rust or argparse for python) we get a lot of free functionality like help menu guides:
+        # Measure the final resource usage
+        end_mem_usage = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 
-![alt text](<readme_images/image copy 4.png>)
+        print(f"Python-Elapsed Time: {elapsed_time:.7f} seconds")
+        print(f"Python-Memory Usage Change: {end_mem_usage - start_mem_usage} kilobytes")
 
-Before you begin taking a look at the code, be sure to add your compiled binary (--release) to your path, this way you can use your CLI normally without using:
+        return end_mem_usage, elapsed_time
 
->cargo run -- -\<flag> argument
+    ```
+  - Create `main.py` and `test_main.py` to ensure that `average.py` runs correctly and to perform testing.
+  - `main.py`
+    ```Python
+    from library.average import average, calculate_time_memory
+    from library.average import average, calculate_time_memory
 
-and instead:
+    data_path = "data/movie_ratings_16_17.csv"
 
->sqlite -c users
+    if __name__ == "__main__":
+        data_path = "data/movie_ratings_16_17.csv"
 
-Command to add compiled binary to path for use:
+        # critic_site can be metascore, imdb, tmeter, audience, fandango
+        critic_site = "tmeter"
 
-*If in codespaces*
+        critic_avg_score = average(data_path, critic_site)
+        print(f"Critic ({critic_site}) Average Rating (2016): {critic_avg_score:.2f}")
 
->export PATH=$PATH:/workspaces/\<REPO_NAME>/sqlite/target/release
+        end_mem_usage, elapsed_time = calculate_time_memory(data_path)
 
-Once you build your CLI binary you can the use it like a regular CLI:
-![alt text](<readme_images/image copy 5.png>)
+        print(f"Final Memory Usage: {end_mem_usage} kilobytes")
+        print(f"Total Elapsed Time: {elapsed_time:.7f} seconds")
 
-This demo example shows you how you might structure a DB CLI with Rust while trying to avoid going into too much detail about Rust rules. 
+    ```
+  - `test_main.py`
+    ```Python
+   from library.average import average, calculate_time_memory
 
-Notable Gaps for students to build out:
+    data_path = "data/movie_ratings_16_17.csv"
 
-* This works for a specific toy csv
+    def test_average():
+        result = average("data/movie_ratings_16_17.csv")
+        expected_result = 53.62
 
-![alt text](<readme_images/image copy 6.png>)
+        assert result == expected_result, "Test has failed."
 
-query_exec expects a specified schema, there are ways to make this more generalized but Rust prefers for you to be explicit about what you expect, this is part of its safety benefits.
 
-Load data also expects the same specific schema, see if you can modify this code to fit your desired data.
+    def test_calculate_time_memory():
+        result = calculate_time_memory("data/movie_ratings_16_17.csv")
 
-* There is no function yet for update (which would use conn.execute() without a query map). See if you can make it!
+        assert result is not None, "Test has failed."
 
-* Tests! There is an example of Rust testing in the add crate from the template. I only have so much free time so, naturally, testing has fallen by the wayside. See if you can test some of the library functions.
 
-## Binary Download Link
+    if __name__ == "__main__":
+        test_average()
+        test_calculate_time_memory()
 
-https://github.com/johncoogan53/Rust_SQLite/actions/runs/11409825326/artifacts/2075818879
+    ```
+
+##  Results
+#### Calculate the Critic Average Score, measure the time used, and monitor memory usage.
+* `Rust` </br>
+  ![alt text](readme_images/rust_output.png)</br>
+* `Python` </br>
+  ![alt text](readme_images/python_output.png)</br>
+  
+|                    |        Rust       |       Python      |       Performance       |
+|:------------------:|:-----------------:|:-----------------:|:-----------------------:|
+|  Critic Average Score 2016 |       58.62    |       58.62    | The values are the same |
+|    Elapsed Time    | 0.0008070 seconds | 0.0014596 seconds |        Rust x 1.809 faster         |
+|    Memory Usage    |    0 kilobytes    |   0 kilobytes  |          The values are the same        |
+| Total Elapsed Time | 0.000807 seconds | 0.0014596 seconds |         Rust x 1.809 faster         |
+| Final Memory Usage | 2621440 kilobytes |  70536 kilobytes  |         Rust x 36.98 slower        |
+
+* Based on the results, Rust generally executes functions faster than Python but used signigicantly more memory. This result is somewhat unexpected as Rust is supposed to be faster and use less memory. It is highly likely that given my limited knowledge of Rust my program runs suboptimally, however, it is possible that Python was better on memory given that pandas and numpy are built specifically for data processing and are highly optimized packages themselves. Every language has it's strengths and weaknesses and performance will vary depending the specific use case and implementation.
